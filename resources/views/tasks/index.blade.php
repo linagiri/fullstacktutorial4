@@ -52,6 +52,7 @@
                         <td>
                             <div class="actions">
 
+                                @can('manage-task', $task)
                                 <a href="{{ route('tasks.show', $task) }}"
                                     class="btn btn-outline">
                                     View
@@ -74,6 +75,7 @@
                                     </button>
 
                                 </form>
+                                @endcan
 
                             </div>
                         </td>

@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::latest()->get();
+        $tasks = $request->user()->tasks()->latest()->get();
         return view("tasks.index", compact('tasks'));
     }
 
@@ -32,7 +34,7 @@ class TaskController extends Controller
     {
         $validated = $request->validated();
 
-        Task::create($validated);
+        $request->user()->tasks()->create($validated);
 
         return redirect()
             ->route('tasks.index')
@@ -44,6 +46,8 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        Gate::authorize('manage-task', $task);
+
         return view('tasks.show', compact("task"));
     }
 
@@ -52,6 +56,8 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        Gate::authorize('manage-task', $task);
+
         return view('tasks.edit', compact('task'));
     }
 
@@ -60,6 +66,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        Gate::authorize('manage-task', $task);
+
         $validated = $request->validated();
 
         $task->update($validated);
@@ -74,6 +82,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        Gate::authorize('manage-task', $task);
+
         $task->delete();
 
         return redirect()
